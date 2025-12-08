@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* Base styles with black theme matching logo */
+body {
+  background-color: #000000;
+  /* Pure black like logo */
+  color: #e4e4e7;
+  /* Light text */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #fafafa;
+  /* White headings */
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #000000;
+  /* Black */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #10b981;
+  /* Primary green */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #059669;
+  /* Darker green */
+}
+
+/* Selection */
+::selection {
+  background-color: #10b981;
+  /* Primary green */
+  color: #000000;
+  /* Black text */
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #10b981;
+  /* Primary green */
+  outline-offset: 2px;
+}
+
+/* Green Glow Effect for Auth Forms */
+.auth-form-glow {
+  box-shadow: 0 20px 25px -5px rgb(16 185 129 / 0.4),
+    0 8px 10px -6px rgb(16 185 129 / 0.4),
+    0 0 15px 2px rgb(16 185 129 / 0.3);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
