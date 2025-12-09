@@ -14,9 +14,9 @@ import {
   Leaf,
   Shield,
   Zap,
-  Users,
   Star,
-  ChevronDown
+  ChevronDown,
+  Droplet
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -44,6 +44,7 @@ export default function HomePage() {
         "Upload plant images and get instant AI-powered diagnoses with treatment recommendations.",
       color: "from-primary-500 to-primary-600",
       bgColor: "from-emerald-500/20 to-green-600/20",
+      href: "/disease-detection",
     },
     {
       icon: CloudSun,
@@ -53,6 +54,7 @@ export default function HomePage() {
         "Get farming-specific weather insights with irrigation and harvesting recommendations.",
       color: "from-info to-info-dark",
       bgColor: "from-sky-500/20 to-blue-600/20",
+      href: "/weather",
     },
     {
       icon: TrendingUp,
@@ -62,6 +64,7 @@ export default function HomePage() {
         "Real-time mandi prices, trends, and predictions to maximize your profits.",
       color: "from-warning to-warning-dark",
       bgColor: "from-amber-500/20 to-orange-600/20",
+      href: "/market-prices",
     },
     {
       icon: MessageCircle,
@@ -71,6 +74,17 @@ export default function HomePage() {
         "24/7 agricultural expert at your fingertips. Ask anything about farming.",
       color: "from-success to-success-dark",
       bgColor: "from-teal-500/20 to-cyan-600/20",
+      href: "/chatbot",
+    },
+    {
+      icon: Droplet,
+      image: "/images/fertilizer.png",
+      title: "Fertilizer Recommendation",
+      description:
+        "Get personalized fertilizer advice based on soil analysis and crop requirements.",
+      color: "from-green-500 to-green-600",
+      bgColor: "from-green-500/20 to-emerald-600/20",
+      href: "/fertilizer",
     },
   ];
 
@@ -137,7 +151,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-agri-50">
+    <div className="min-h-screen bg-black">
       <Header transparent />
 
       {/* Hero Section */}
@@ -188,7 +202,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-bold text-agri-900 mb-6 leading-tight font-display"
+              className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight font-display"
             >
               Transform Your Farm with
               <span className="bg-gradient-to-r from-primary-500 to-primary-300 bg-clip-text text-transparent">
@@ -201,7 +215,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-agri-500 mb-10 max-w-3xl mx-auto"
+              className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto"
             >
               Detect crop diseases instantly, track market prices, get weather
               alerts, and receive personalized farming advice — all in one place.
@@ -215,7 +229,7 @@ export default function HomePage() {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <Link href="/signup">
-                <Button size="xl" className="w-full sm:w-auto shadow-glow">
+                <Button size="xl" className="w-full sm:w-auto shadow-glow hover:bg-white hover:text-black">
                   Get Started Free
                   <ArrowRight className="h-5 w-5" />
                 </Button>
@@ -245,7 +259,7 @@ export default function HomePage() {
                   <div className="text-3xl md:text-4xl font-bold text-primary-500 mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-agri-400">{stat.label}</div>
+                  <div className="text-sm text-gray-400">{stat.label}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -254,16 +268,19 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-agri-100/50">
+      <section id="features" className="py-24 bg-black relative overflow-hidden">
+        {/* Green Gradient Background Effects */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-green-600/10 rounded-full blur-[120px] pointer-events-none" />
         <Container>
           <div className="text-center mb-16">
-            <Badge variant="success" className="mb-4">
+            <Badge className="mb-4 bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">
               Features
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-agri-900 mb-4 font-display">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display">
               Everything You Need for Smart Farming
             </h2>
-            <p className="text-lg text-agri-500 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
               Comprehensive tools designed specifically for Indian farmers to
               increase yield and reduce risks.
             </p>
@@ -285,7 +302,7 @@ export default function HomePage() {
                   transition={{ duration: 0.2, delay: index * 0.1 }}
                   className="rounded-xl"
                 >
-                  <Card className="h-full group border-transparent hover:border-primary-500/30 transition-all duration-200">
+                  <Card className="h-full group border-green-500/30 bg-gradient-to-br from-green-900/20 to-black/80 hover:border-green-500/50 hover:bg-green-900/30 transition-all duration-300 backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.05)] hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]">
                     <CardHeader>
                       {/* Icon and Title in Colored Rectangle */}
                       <div className={`flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br ${feature.bgColor} mb-6 border border-agri-700/30`}>
@@ -317,17 +334,17 @@ export default function HomePage() {
                           </motion.div>
                         )}
 
-                        <h3 className="text-xl font-bold text-agri-50 group-hover:text-white transition-colors duration-300">
+                        <h3 className="text-xl font-bold text-white group-hover:text-green-400 transition-colors duration-300">
                           {feature.title}
                         </h3>
                       </div>
 
-                      <CardDescription className="text-base leading-relaxed">
+                      <CardDescription className="text-base leading-relaxed text-gray-400">
                         {feature.description}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link href={`/${feature.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <Link href={feature.href}>
                         <Button variant="ghost" className="p-0 h-auto text-primary-400 hover:text-primary-300 transition-colors group/btn">
                           Learn More
                           <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -343,16 +360,18 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-b from-agri-100 to-agri-50">
+      <section className="py-24 bg-black relative overflow-hidden">
+        {/* Green Gradient Background Effects */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-900/10 rounded-full blur-[120px] pointer-events-none" />
         <Container>
           <div className="text-center mb-16">
-            <Badge variant="success" className="mb-4">
+            <Badge className="mb-4 bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">
               Testimonials
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-agri-900 mb-4 font-display">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display">
               Trusted by Farmers Across India
             </h2>
-            <p className="text-lg text-agri-500 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
               See how farmers are transforming their practices with AI.
             </p>
           </div>
@@ -366,23 +385,23 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full">
+                <Card className="h-full border-green-500/30 bg-gradient-to-br from-green-900/20 to-black/80 text-white hover:border-green-500/50 transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.05)] hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]">
                   <CardContent className="pt-6">
                     <div className="flex gap-1 mb-4">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-warning text-warning" />
+                        <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
                       ))}
                     </div>
-                    <p className="text-agri-600 mb-6 italic">
+                    <p className="text-gray-300 mb-6 italic">
                       "{testimonial.quote}"
                     </p>
                     <div className="flex items-center gap-3">
                       <div className="text-3xl">{testimonial.avatar}</div>
                       <div>
-                        <div className="font-semibold text-agri-800">
+                        <div className="font-semibold text-white">
                           {testimonial.name}
                         </div>
-                        <div className="text-sm text-agri-400">
+                        <div className="text-sm text-gray-500">
                           {testimonial.location}
                         </div>
                       </div>
@@ -396,16 +415,20 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-agri-50">
-        <Container size="md">
+      <section id="faq" className="py-24 bg-black relative overflow-hidden">
+        {/* Green Gradient Background Effects - Intensified */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-green-600/20 rounded-full blur-[120px] pointer-events-none" />
+
+        <Container size="md" className="relative z-10">
           <div className="text-center mb-16">
-            <Badge variant="success" className="mb-4">
+            <Badge className="mb-4 bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/40">
               FAQ
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-agri-900 mb-4 font-display">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display">
               Frequently Asked Questions
             </h2>
-            <p className="text-lg text-agri-500">
+            <p className="text-lg text-gray-400">
               Got questions? We've got answers.
             </p>
           </div>
@@ -434,7 +457,7 @@ export default function HomePage() {
               <Link href="/signup">
                 <Button
                   size="xl"
-                  className="w-full sm:w-auto bg-agri-900 text-white hover:bg-agri-800 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-agri-700"
+                  className="w-full sm:w-auto bg-agri-900 text-white hover:bg-white hover:text-black shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-agri-700"
                 >
                   Get Started Free
                   <ArrowRight className="h-5 w-5 ml-2" />
@@ -444,7 +467,7 @@ export default function HomePage() {
                 <Button
                   size="xl"
                   variant="outline"
-                  className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-300"
+                  className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300"
                 >
                   Learn More
                 </Button>
@@ -452,10 +475,10 @@ export default function HomePage() {
             </div>
           </div>
         </Container>
-      </section>
+      </section >
 
       <Footer />
-    </div>
+    </div >
   );
 }
 
@@ -466,20 +489,20 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
     <motion.div
       initial={false}
-      className="border border-agri-200 rounded-lg overflow-hidden bg-agri-100/30"
+      className="border border-green-500/40 rounded-lg overflow-hidden bg-gradient-to-br from-green-900/40 to-black/80 backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.1)]"
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 text-left hover:bg-agri-100/50 transition-colors"
+        className="w-full flex items-center justify-between p-6 text-left hover:bg-green-500/10 transition-colors"
       >
-        <span className="font-semibold text-lg text-agri-900">
+        <span className="font-semibold text-lg text-white">
           {question}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <ChevronDown className="h-5 w-5 text-agri-400" />
+          <ChevronDown className="h-5 w-5 text-green-400" />
         </motion.div>
       </button>
       <motion.div
@@ -491,7 +514,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         transition={{ duration: 0.3 }}
         className="overflow-hidden"
       >
-        <div className="px-6 pb-6 text-agri-600">{answer}</div>
+        <div className="px-6 pb-6 text-gray-300 border-t border-green-500/30 pt-4">{answer}</div>
       </motion.div>
     </motion.div>
   );

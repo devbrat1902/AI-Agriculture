@@ -29,8 +29,8 @@ export function Header({ transparent = false }: HeaderProps) {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/#features" },
-    { name: "About", href: "/#about" },
-    { name: "Contact", href: "/#contact" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   const dashboardNavigation = [
@@ -38,7 +38,7 @@ export function Header({ transparent = false }: HeaderProps) {
     { name: "Disease Detection", href: "/disease-detection" },
     { name: "Weather", href: "/weather" },
     { name: "Market Prices", href: "/market-prices" },
-    { name: "Chat", href: "/chat" },
+    { name: "Chat", href: "/chatbot" },
   ];
 
   const currentNav = isAuthenticated ? dashboardNavigation : navigation;
