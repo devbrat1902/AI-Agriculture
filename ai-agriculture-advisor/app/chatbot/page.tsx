@@ -48,8 +48,8 @@ export default function ChatbotPage() {
     setIsTyping(true);
 
     try {
-      // Get AI response
-      const botMessage = await sendMessage(textToSend);
+      // Get AI response with conversation history
+      const botMessage = await sendMessage(textToSend, messages);
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Failed to get response:", error);
