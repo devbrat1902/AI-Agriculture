@@ -1,51 +1,35 @@
-// Mock Weather API
-
-export interface WeatherCondition {
-  id: number;
-  main: string; // "Clear", "Clouds", "Rain", etc.
-  description: string;
-  icon: string;
-}
-
-export interface CurrentWeather {
-  location: string;
-  temperature: number;
-  feelsLike: number;
-  condition: WeatherCondition;
-  humidity: number;
-  windSpeed: number;
-  pressure: number;
-  sunrise: string;
-  sunset: string;
-}
-
-export interface DailyForecast {
-  date: string;
-  dayName: string;
-  high: number;
-  low: number;
-  condition: WeatherCondition;
-  precipitation: number;
-}
-
-export interface HourlyForecast {
-  time: string;
-  temperature: number;
-  condition: WeatherCondition;
-}
-
-export interface WeatherAlert {
-  type: "Heavy Rain" | "Heat Wave" | "Frost" | "Storm" | "Drought";
-  severity: "low" | "medium" | "high";
-  message: string;
-  actions: string[];
-}
+// Real Weather API Implementation using OpenWeatherMap
 
 export interface WeatherData {
-  current: CurrentWeather;
-  daily: DailyForecast[];
-  hourly: HourlyForecast[];
-  alerts: WeatherAlert[];
+  current: {
+    location: string;
+    temperature: number;
+    feelsLike: number;
+    humidity: number;
+    windSpeed: number;
+    description: string;
+    icon: string;
+  };
+  daily: Array<{
+    date: string;
+    day: string;
+    high: number;
+    low: number;
+    description: string;
+    icon: string;
+    precipitation: number;
+  }>;
+  hourly: Array<{
+    time: string;
+    temperature: number;
+    feelsLike: number;
+  }>;
+  alerts: Array<{
+    type: string;
+    severity: "high" | "medium" | "low";
+    message: string;
+    actions: string[];
+  }>;
   irrigationAdvice: {
     shouldWater: boolean;
     reason: string;
@@ -53,140 +37,183 @@ export interface WeatherData {
   };
 }
 
-const weatherConditions = [
-  { id: 1, main: "Clear", description: "Clear sky", icon: "☀️" },
-  { id: 2, main: "Clouds", description: "Partly cloudy", icon: "⛅" },
-  { id: 3, main: "Clouds", description: "Overcast", icon: "☁️" },
-  { id: 4, main: "Rain", description: "Light rain", icon: "🌦️" },
-  { id: 5, main: "Rain", description: "Heavy rain", icon: "🌧️" },
-  { id: 6, main: "Thunderstorm", description: "Thunderstorm", icon: "⛈️" },
-];
+const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
-const locations = ["Pune, Maharashtra", "Delhi, NCR", "Bengaluru, Karnataka"];
-
-function getRandomCondition(): WeatherCondition {
-  return weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+// Get user's location (default to Delhi, India)
+async function getCoordinates() {
+  // Default to Delhi for Indian agriculture context
+  return { lat: 28.6139, lon: 77.2090, city: "Delhi, India" };
 }
 
-function generateHourlyForecast(): HourlyForecast[] {
-  const hourly: HourlyForecast[] = [];
-  const baseTemp = 20 + Math.random() * 15; // 20-35°C
-
-  for (let i = 0; i < 24; i++) {
-    // Temperature varies throughout the day
-    const timeOfDay = i / 24;
-    const tempVariation = Math.sin(timeOfDay * Math.PI * 2 - Math.PI / 2) * 8;
-
-    hourly.push({
-      time: `${i.toString().padStart(2, '0')}:00`,
-      temperature: Math.round(baseTemp + tempVariation),
-      condition: i % 6 === 0 ? getRandomCondition() : hourly[i - 1]?.condition || getRandomCondition(),
-    });
+// Fetch current weather from OpenWeatherMap
+async function getCurrentWeather(lat: number, lon: number) {
+  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Weather API error: ${response.status}`);
   }
-
-  return hourly;
+  return response.json();
 }
 
-function generateDailyForecast(): DailyForecast[] {
-  const daily: DailyForecast[] = [];
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const today = new Date();
-  const baseHigh = 28 + Math.random() * 10; // 28-38°C
-
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-
-    const dayIndex = date.getDay();
-    const tempVariation = (Math.random() - 0.5) * 6;
-    const high = Math.round(baseHigh + tempVariation);
-    const low = Math.round(high - 8 - Math.random() * 4);
-
-    daily.push({
-      date: date.toISOString().split('T')[0],
-      dayName: i === 0 ? "Today" : i === 1 ? "Tomorrow" : days[dayIndex],
-      high,
-      low,
-      condition: getRandomCondition(),
-      precipitation: Math.round(Math.random() * 80),
-    });
+// Fetch 5-day forecast from OpenWeatherMap
+async function getForecast(lat: number, lon: number) {
+  const url = `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Forecast API error: ${response.status}`);
   }
-
-  return daily;
+  return response.json();
 }
 
-function generateWeatherAlerts(): WeatherAlert[] {
-  const alerts: WeatherAlert[] = [];
-  const random = Math.random();
+// Transform OpenWeatherMap data to our app format
+function transformWeatherData(current: any, forecast: any, city: string): WeatherData {
+  // Current weather
+  const currentWeather = {
+    location: city,
+    temperature: Math.round(current.main.temp),
+    feelsLike: Math.round(current.main.feels_like),
+    humidity: current.main.humidity,
+    windSpeed: Math.round(current.wind.speed * 3.6), // Convert m/s to km/h
+    description: current.weather[0].description,
+    icon: current.weather[0].icon,
+  };
 
-  if (random > 0.7) {
+  // Daily forecast - aggregate by day
+  const dailyMap = new Map();
+  forecast.list.forEach((item: any) => {
+    const date = new Date(item.dt * 1000);
+    const dateKey = date.toISOString().split("T")[0];
+
+    if (!dailyMap.has(dateKey)) {
+      const dayIndex = date.getDay();
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const today = new Date().toISOString().split("T")[0];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowKey = tomorrow.toISOString().split("T")[0];
+
+      let dayLabel;
+      if (dateKey === today) dayLabel = "Today";
+      else if (dateKey === tomorrowKey) dayLabel = "Tomorrow";
+      else dayLabel = days[dayIndex];
+
+      dailyMap.set(dateKey, {
+        date: dateKey,
+        day: dayLabel,
+        high: item.main.temp_max,
+        low: item.main.temp_min,
+        description: item.weather[0].description,
+        icon: item.weather[0].icon,
+        precipitation: (item.pop || 0) * 100, // Probability of precipitation
+      });
+    } else {
+      const existing = dailyMap.get(dateKey);
+      existing.high = Math.max(existing.high, item.main.temp_max);
+      existing.low = Math.min(existing.low, item.main.temp_min);
+      existing.precipitation = Math.max(existing.precipitation, (item.pop || 0) * 100);
+    }
+  });
+
+  const daily = Array.from(dailyMap.values()).slice(0, 7).map((day) => ({
+    ...day,
+    high: Math.round(day.high),
+    low: Math.round(day.low),
+    precipitation: Math.round(day.precipitation),
+  }));
+
+  // Hourly forecast (next 24 hours)
+  const hourly = forecast.list.slice(0, 8).map((item: any) => ({
+    time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    temperature: Math.round(item.main.temp),
+    feelsLike: Math.round(item.main.feels_like),
+  }));
+
+  // Calculate average precipitation for irrigation advice
+  const avgPrecipitation = daily.slice(0, 3).reduce((sum, d) => sum + d.precipitation, 0) / 3;
+
+  // Irrigation recommendation based on weather
+  const irrigationAdvice = {
+    shouldWater: avgPrecipitation < 30 && currentWeather.humidity < 60,
+    reason:
+      avgPrecipitation < 30
+        ? "Low rainfall expected in the coming days. Soil moisture may be insufficient."
+        : "Adequate rainfall expected. Skip irrigation to conserve water.",
+    amount: avgPrecipitation < 30 ? "15-20mm per irrigation cycle" : undefined,
+  };
+
+  // Generate farming-specific weather alerts
+  const alerts = [];
+  if (currentWeather.temperature > 35) {
     alerts.push({
-      type: "Heavy Rain",
-      severity: "high",
-      message: "Heavy rainfall expected tomorrow. Potential flooding in low-lying areas.",
-      actions: [
-        "Ensure proper drainage in fields",
-        "Cover sensitive crops",
-        "Postpone spraying activities",
-        "Check irrigation channels",
-      ],
-    });
-  } else if (random > 0.5) {
-    alerts.push({
-      type: "Heat Wave",
-      severity: "medium",
-      message: "Temperature expected to rise above 40°C for the next 3 days.",
+      type: "Heat Wave Alert",
+      severity: "high" as const,
+      message: "Extreme heat conditions detected. Crops may experience heat stress.",
       actions: [
         "Increase irrigation frequency",
-        "Provide shade for young plants",
-        "Monitor for heat stress",
+        "Apply mulch to retain soil moisture",
+        "Consider shade netting for sensitive crops",
         "Avoid midday field work",
       ],
     });
   }
-
-  return alerts;
-}
-
-export async function getWeatherData(location?: string): Promise<WeatherData> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  const selectedLocation = location || locations[Math.floor(Math.random() * locations.length)];
-  const currentTemp = 22 + Math.random() * 15;
-  const currentCondition = getRandomCondition();
-  const daily = generateDailyForecast();
-  const hourly = generateHourlyForecast();
-  const alerts = generateWeatherAlerts();
-
-  // Irrigation logic
-  const hasRainAlert = alerts.some((a) => a.type === "Heavy Rain");
-  const recentRain = currentCondition.main === "Rain";
-  const shouldWater = !hasRainAlert && !recentRain && Math.random() > 0.3;
+  if (avgPrecipitation > 70) {
+    alerts.push({
+      type: "Heavy Rainfall Warning",
+      severity: "medium" as const,
+      message: "High precipitation expected. Risk of waterlogging and fungal diseases.",
+      actions: [
+        "Ensure proper drainage in fields",
+        "Delay fertilizer application",
+        "Monitor for fungal infections",
+        "Cover sensitive crops if possible",
+      ],
+    });
+  }
+  if (currentWeather.temperature < 10) {
+    alerts.push({
+      type: "Frost Warning",
+      severity: "high" as const,
+      message: "Low temperatures may cause frost damage to crops.",
+      actions: [
+        "Cover sensitive plants overnight",
+        "Use frost protection methods",
+        "Delay planting of frost-sensitive crops",
+        "Monitor temperature closely",
+      ],
+    });
+  }
 
   return {
-    current: {
-      location: selectedLocation,
-      temperature: Math.round(currentTemp),
-      feelsLike: Math.round(currentTemp + (Math.random() - 0.5) * 4),
-      condition: currentCondition,
-      humidity: 40 + Math.round(Math.random() * 40),
-      windSpeed: Math.round(Math.random() * 20 + 5),
-      pressure: 1010 + Math.round(Math.random() * 20),
-      sunrise: "06:15 AM",
-      sunset: "06:45 PM",
-    },
+    current: currentWeather,
     daily,
     hourly,
     alerts,
-    irrigationAdvice: {
-      shouldWater,
-      reason: shouldWater
-        ? "No rain expected in next 48 hours. Soil moisture likely low."
-        : hasRainAlert
-          ? "Heavy rainfall predicted. Skip watering to avoid waterlogging."
-          : "Recent rainfall detected. Soil moisture adequate.",
-      amount: shouldWater ? "15-20mm per hectare" : undefined,
-    },
+    irrigationAdvice,
   };
+}
+
+// Main export function
+export async function getWeatherData(): Promise<WeatherData> {
+  try {
+    if (!API_KEY) {
+      throw new Error("OpenWeatherMap API key not configured. Please add NEXT_PUBLIC_OPENWEATHER_API_KEY to .env.local");
+    }
+
+    const { lat, lon, city } = await getCoordinates();
+
+    // Fetch both current weather and forecast in parallel
+    const [current, forecast] = await Promise.all([
+      getCurrentWeather(lat, lon),
+      getForecast(lat, lon),
+    ]);
+
+    return transformWeatherData(current, forecast, city);
+  } catch (error) {
+    console.error("Weather API Error:", error);
+    throw error;
+  }
 }
