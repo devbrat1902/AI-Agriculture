@@ -8,11 +8,16 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Container } from "@/components/layout/Container";
+import { handleGoogleSignIn } from "./actions";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, isLoading } = useAuth();
+
+  const handleGoogleLogin = async () => {
+    await handleGoogleSignIn();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +119,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-primary-600 text-white hover:bg-white hover:text-agri-900 shadow-lg shadow-primary-900/20 transition-all duration-300"
+                  className="w-full bg-primary-600 text-white hover:bg-white hover:text-black shadow-lg shadow-primary-900/20 transition-all duration-300"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -139,11 +144,23 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="w-full border-gray-700 bg-black/50 text-gray-300 hover:bg-white/5 hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="w-full border-gray-700 bg-black/50 text-gray-300 hover:bg-white/5 hover:text-white"
+                    onClick={handleGoogleLogin}
+                    disabled={isLoading}
+                    type="button"
+                  >
                     <Github className="h-4 w-4 mr-2" />
                     Github
                   </Button>
-                  <Button variant="outline" className="w-full border-gray-700 bg-black/50 text-gray-300 hover:bg-white/5 hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="w-full border-gray-700 bg-black/50 text-gray-300 hover:bg-white/5 hover:text-white"
+                    onClick={handleGoogleLogin}
+                    disabled={isLoading}
+                    type="button"
+                  >
                     <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"

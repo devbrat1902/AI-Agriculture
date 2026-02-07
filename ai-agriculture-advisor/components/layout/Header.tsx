@@ -12,7 +12,13 @@ interface HeaderProps {
   transparent?: boolean;
 }
 
-export function Header({ transparent = false }: HeaderProps) {
+import { usePathname } from "next/navigation";
+
+export function Header({ transparent: propsTransparent }: HeaderProps) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const transparent = propsTransparent ?? isHome;
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);

@@ -20,6 +20,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string) => Promise<void>;
   signup: (userData: Partial<User>) => Promise<void>;
+  loginWithSocial: (provider: "google" | "github") => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -95,6 +96,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/");
   };
 
+  // Mock Social Login
+  const loginWithSocial = async (provider: "google" | "github") => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const mockUser: User = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: provider === "github" ? "GitHub User" : "Google User",
+      email: provider === "github" ? "github@example.com" : "google@example.com",
+      role: "farmer",
+      avatar: provider === "github"
+        ? "https://api.dicebear.com/7.x/avataaars/svg?seed=Github"
+        : "https://api.dicebear.com/7.x/avataaars/svg?seed=Google",
+    };
+
+    setUser(mockUser);
+    localStorage.setItem("agri_user", JSON.stringify(mockUser));
+    setIsLoading(false);
+    router.push("/dashboard");
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -103,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         signup,
+        loginWithSocial,
         logout,
       }}
     >

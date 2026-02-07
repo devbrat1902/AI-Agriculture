@@ -18,7 +18,7 @@ import {
   ChevronDown,
   Droplet
 } from "lucide-react";
-import { Header } from "@/components/layout/Header";
+
 import { Footer } from "@/components/layout/Footer";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
@@ -95,32 +95,7 @@ export default function HomePage() {
     { value: "24/7", label: "Support" },
   ];
 
-  const testimonials = [
-    {
-      name: "Rajesh Kumar",
-      location: "Punjab",
-      quote:
-        "The disease detection feature saved my wheat crop. Identified the problem early and prevented major loss!",
-      rating: 5,
-      avatar: "👨‍🌾",
-    },
-    {
-      name: "Lakshmi Devi",
-      location: "Tamil Nadu",
-      quote:
-        "Market price predictions helped me sell at the right time. Increased my income by 25%!",
-      rating: 5,
-      avatar: "👩‍🌾",
-    },
-    {
-      name: "Suresh Patel",
-      location: "Gujarat",
-      quote:
-        "Weather alerts and irrigation recommendations are incredibly helpful. No more guesswork!",
-      rating: 5,
-      avatar: "👨‍🌾",
-    },
-  ];
+
 
   const faqs = [
     {
@@ -152,7 +127,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header transparent />
+
 
       {/* Hero Section */}
       <section
@@ -359,60 +334,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 bg-black relative overflow-hidden">
-        {/* Green Gradient Background Effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-900/10 rounded-full blur-[120px] pointer-events-none" />
-        <Container>
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">
-              Testimonials
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display">
-              Trusted by Farmers Across India
-            </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              See how farmers are transforming their practices with AI.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="h-full border-green-500/30 bg-gradient-to-br from-green-900/20 to-black/80 text-white hover:border-green-500/50 transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.05)] hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                  <CardContent className="pt-6">
-                    <div className="flex gap-1 mb-4">
-                      {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                      ))}
-                    </div>
-                    <p className="text-gray-300 mb-6 italic">
-                      "{testimonial.quote}"
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl">{testimonial.avatar}</div>
-                      <div>
-                        <div className="font-semibold text-white">
-                          {testimonial.name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {testimonial.location}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
 
       {/* FAQ Section */}
       <section id="faq" className="py-24 bg-black relative overflow-hidden">

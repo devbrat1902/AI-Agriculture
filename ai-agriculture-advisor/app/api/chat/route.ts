@@ -1,7 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Initialize Gemini with error checking
+const apiKey = process.env.GEMINI_API_KEY;
+
+if (!apiKey) {
+  console.error("⚠️ GEMINI_API_KEY is not set in environment variables");
+}
+
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 // Agriculture-focused system instruction
 const SYSTEM_INSTRUCTION = `You are an expert agricultural advisor specifically for Indian farmers. Your role is to provide practical, actionable farming advice.
@@ -35,7 +42,17 @@ When asked about:
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, conversationHistory } = await request.json();
+    // Check if Gemini is initialized
+    if (!genAI) {
+      console.error("❌ Gemini AI not initialized - API key missing");
+      return NextResponse.json(
+        { error: "AI service not configured. Please check server configuration." },
+        { status: 500 }
+      );
+    }
+
+    const body = await request.json();
+    const { message, conversationHistory } = body;
 
     if (!message || typeof message !== "string") {
       return NextResponse.json(
@@ -44,9 +61,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log("📨 Received message:", message.substring(0, 50) + "...");
+
     // Initialize Gemini model with agriculture context
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-pro-latest",
       systemInstruction: SYSTEM_INSTRUCTION,
     });
 
@@ -60,28 +79,57 @@ export async function POST(request: NextRequest) {
       prompt = `${context}\nFarmer: ${message}`;
     }
 
-    // Generate response
-    const result = await model.generateContent(prompt);
+    console.log("🚀 Sending to Gemini API...");
+
+    // Generate response with timeout
+    const result = await Promise.race([
+      model.generateContent(prompt),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timeout")), 30000)
+      )
+    ]) as any;
+
     const response = await result.response;
     const text = response.text();
+
+    console.log("✅ Gemini response received:", text.substring(0, 50) + "...");
 
     return NextResponse.json({
       response: text,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error("Gemini API Error:", error);
+    console.error("❌ Gemini API Error:", error);
+    console.error("Error details:", {
+      message: error.message,
+      name: error.name,
+      stack: error.stack?.substring(0, 200)
+    });
 
     // Handle specific errors
-    if (error.message?.includes("API key")) {
+    if (error.message?.includes("API key") || error.message?.includes("API_KEY_INVALID")) {
       return NextResponse.json(
-        { error: "Invalid API key configuration" },
+        { error: "Invalid API key. Please check your Gemini API configuration." },
         { status: 500 }
       );
     }
 
+    if (error.message?.includes("timeout")) {
+      return NextResponse.json(
+        { error: "Request took too long. Please try again with a shorter message." },
+        { status: 504 }
+      );
+    }
+
+    if (error.message?.includes("quota") || error.message?.includes("rate limit")) {
+      return NextResponse.json(
+        { error: "API quota exceeded. Please try again in a moment." },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to generate response. Please try again." },
+      { error: "Failed to generate response. Please try again in a moment." },
       { status: 500 }
     );
   }
